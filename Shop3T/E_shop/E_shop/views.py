@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect, HttpResponse
-from store_app.models import Category,Product,Contact_us,Order
+from store_app.models import Category,Product,Contact_us,Order,Brand
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from store_app.models import UserCreateForm
@@ -12,16 +12,24 @@ def Master(request):
 
 def Index(request):
     category = Category.objects.all()
-    product = Product.objects.all()
+    brand = Brand.objects.all()
+    brandID = request.GET.get('brand')
+
+
+    # product = Product.objects.all()
     categoryID = request.GET.get('category')
     if categoryID:
         product = Product.objects.filter(sub_category = categoryID).order_by('-id')
+    elif brandID:
+        product = Product.objects.filter(brand = brandID).order_by('-id')
+
     else:
-        pass
+        product = Product.objects.all()
 
     context = {
         'category':category,
         'product':product,
+        'brand': brand,
     }
 
     return render(request,'index.html', context)
@@ -130,3 +138,54 @@ def CheckOut(request):
         return redirect("index")
 
     return HttpResponse("This is checkout page")
+
+def Your_Order(request):
+    uid = request.session.get('_auth_user_id')
+    user = User.objects.get(pk=uid)
+
+    order = Order.objects.filter(user = user)
+    context = {
+        'order':order,
+    }
+
+
+    return render(request, 'order.html', context)
+
+def Product_page(request):
+    category = Category.objects.all()
+
+    brand = Brand.objects.all()
+    brandID = request.GET.get('brand')
+
+    # product = Product.objects.all()
+    categoryID = request.GET.get('category')
+    if categoryID:
+        product = Product.objects.filter(sub_category=categoryID).order_by('-id')
+    elif brandID:
+        product = Product.objects.filter(brand=brandID).order_by('-id')
+
+    else:
+        product = Product.objects.all()
+
+    context = {
+        'category': category,
+        'brand': brand,
+        'product': product,
+
+    }
+    return render(request,'product.html',context)
+
+def Product_Detail(request,id):
+    product = Product.objects.filter(id = id).first()
+    context = {
+        'product': product,
+    }
+    return render(request,'product_detail.html',context)
+
+def Search(request):
+    query = request.GET['query']
+    product = Product.objects.filter(name__icontains = query)
+    context = {
+         "product": product,
+    }
+    return render(request, 'search.html',context)

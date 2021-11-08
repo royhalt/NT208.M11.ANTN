@@ -43,4 +43,16 @@ urlpatterns = [
     #Cehckout page
     path('checkout/', views.CheckOut, name="checkout"),
 
+    #Order page
+    path('order/', views.Your_Order, name="order"),
+
+    #Product page
+    path('product/', views.Product_page, name="product"),
+
+    #Product detail
+    path('product/<str:id>',views.Product_Detail, name="product_detail"),
+
+    #search
+    path('search/', views.Search, name="search"),
+
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

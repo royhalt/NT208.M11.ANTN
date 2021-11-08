@@ -19,12 +19,23 @@ class Sub_Category(models.Model):
     def __str__(self):
         return self.name
 
+class Brand(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
+    Availability =(('In Stock', 'In Stock'),('Out of Stock','Out of Stock'))
+
     category = models.ForeignKey(Category, on_delete=models.CASCADE,null=False,default='')
     sub_category = models.ForeignKey(Sub_Category, on_delete=models.CASCADE,null=False,default='')
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE,null=True)
     image = models.ImageField(upload_to='ecommerce/pimg')
     name = models.CharField(max_length=100)
     price = models.IntegerField()
+    Availability =models.CharField(choices=Availability, null =True,max_length=100)
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
