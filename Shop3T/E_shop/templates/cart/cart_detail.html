@@ -25,7 +25,7 @@
 						{% for key,value in request.session.cart.items %}
 						<tr>
 							<td class="cart_product">
-								<a href=""><img width="100px" height="200px" src="{{value.image}}" alt=""></a>
+								<a href=""><img width="200px" height="150px" style="object-fit: fill" src="{{value.image}}" alt=""></a>
 							</td>
 							<td class="cart_description">
 								<h4><a href="">{{value.name}}</a></h4>
@@ -88,7 +88,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Order</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -97,8 +97,12 @@
         <form method="post" action="/checkout/">
 			{% csrf_token %}
           <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Phone:</label>
+            <label for="recipient-name" class="col-form-label">Full name:</label>
             <input type="text" name="phone" class="form-control" id="recipient-name">
+          </div>
+		  <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Phone:</label>
+            <input type="text" name="phone" class="form-control" id="recipient-phone">
           </div>
           <div class="form-group">
             <label for="message-text" class="col-form-label">Address:</label>
@@ -106,8 +110,50 @@
           </div>
 			<div class="modal-footer">
 
-        <button type="submit" class="btn btn-primary">Checkout</button>
-      </div>
+        		<div id="paypal-button-container"></div>
+
+    <!-- Include the PayPal JavaScript SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AdPsGi1w9LUG2WEQ4CvDLpD1TnxtDNk2qC63e2ufVYAYcYiT7Ow9ckwjYXNYmYIzqF_-gORHoocc8u2N&currency=USD&disable-funding=credit"></script>
+
+    <script>
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+			style:{
+				color:'blue',
+				shape: 'rect',
+			},
+
+            // Set up the transaction
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: {{cart_total_amount}}
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(orderData) {
+                    // Successful capture! For demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    var transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+
+                    // Replace the above to show a success message within this page, e.g.
+                    // const element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '';
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+            }
+
+
+        }).render('#paypal-button-container');
+    </script>
+      		</div>
         </form>
       </div>
 
