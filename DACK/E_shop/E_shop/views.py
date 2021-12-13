@@ -234,6 +234,7 @@ def Check_out(request):
     payment = client.order.create({
         "amount": amount,
         "currency": "INR",
+        # "currency": "USD",
         "payment_capture":"1"
     })
     order_id = payment['id']

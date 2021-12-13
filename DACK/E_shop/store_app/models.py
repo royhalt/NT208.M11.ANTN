@@ -97,8 +97,8 @@ class Contact_us(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    firstname = models.CharField(max_length=100)
-    lastname = models.CharField(max_length=100)
+    firstname = models.CharField(max_length=100,null=True,blank=True)
+    lastname = models.CharField(max_length=100,null=True,blank=True)
     country = models.CharField(max_length=100)
     address = models.TextField()
     city = models.CharField(max_length=100)
